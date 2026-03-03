@@ -1,0 +1,56 @@
+:root{
+  --mxw: 820px;        /* 960→820で締める */
+  --gap: 10px;         /* 12→10でタイトに */
+  --radius: 12px;
+  --border: 1px solid #2a2a2a;
+  --bg: #111; --panel:#1a1a1a; --text:#eee; --muted:#aaa; --accent:#fff;
+}
+
+*{ box-sizing:border-box; }
+html,body,#root{ height:100%; }
+body{ margin:0; background:var(--bg); color:var(--text); font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+
+.wrapper{ max-width:var(--mxw); margin:24px auto; padding:0 12px; }
+
+/* 見出しを詰める */
+.title{ font-size:22px; font-weight:700; letter-spacing:.2px; margin:4px 0 12px; }
+
+/* 検索バー：入力 + ボタンの2列（狭い時は縦積み） */
+.toolbar{
+  display:grid; gap:var(--gap);
+  grid-template-columns: 1fr auto;
+  background:var(--panel); border:var(--border); border-radius:var(--radius); padding:10px;
+}
+@media (max-width:640px){ .toolbar{ grid-template-columns:1fr; } }
+
+.input,.select,.btn{
+  height:36px; padding:0 10px; border:var(--border); border-radius:8px; background:#121212; color:var(--text);
+}
+.btn{ background:var(--accent); color:#000; border-color:#000; font-weight:700; cursor:pointer; }
+.btn--ghost{ background:#222; color:var(--text); border-color:#333; }
+.btn:disabled{ opacity:.6; cursor:not-allowed; }
+
+/* 作成フォームをパネル化 */
+.create{
+  display:grid; gap:var(--gap);
+  background:var(--panel); border:var(--border); border-radius:var(--radius); padding:10px; margin-top:10px;
+}
+.create textarea{ min-height:84px; padding:10px; border:var(--border); border-radius:8px; background:#121212; color:var(--text); }
+.create .row{ display:flex; gap:10px; align-items:center; }
+
+.count{ color:var(--muted); margin-left:auto; }
+
+/* カード：2～3列で自動折り返し（中央に見える） */
+.list{
+  margin-top:10px; display:grid; gap:var(--gap);
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+.card{
+  border:var(--border); border-radius:var(--radius); padding:12px; background:#181818;
+  display:flex; flex-direction:column; gap:8px;
+}
+.card__top{ display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.card__title{ font-weight:700; font-size:15px; }
+.badge{ font-size:12px; padding:2px 8px; border:var(--border); border-radius:999px; background:#222; color:var(--muted); }
+.actions{ display:flex; gap:8px; }
+.meta{ font-size:12px; color:var(--muted); }
