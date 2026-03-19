@@ -4,7 +4,7 @@ from flask_cors import CORS
 from datetime import datetime
 import os
 # password hashing (user creation handled separately)
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import check_password_hash
 from functools import wraps
 
 ALLOWED_STATUS = {"open", "done"}
