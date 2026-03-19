@@ -73,6 +73,24 @@ SQLite Database
 
 ## Local Setup
 
+### Initialize Database
+
+The database is automatically created on application startup using SQLAlchemy (`db.create_all`).
+
+### Create Demo User
+
+If no user exists, create one via Python shell:
+
+```bash
+python
+>>> from app import app, db, User
+>>> from werkzeug.security import generate_password_hash
+>>> with app.app_context():
+...     u = User(username="demo", password_hash=generate_password_hash("demo123"))
+...     db.session.add(u)
+...     db.session.commit()
+```
+
 ### Backend
 
 ```bash

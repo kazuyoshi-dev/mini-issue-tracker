@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from datetime import datetime
 import os
+# password hashing (user creation handled separately)
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 
@@ -12,14 +13,13 @@ DEFAULT_STATUS = "open"
 app = Flask(__name__, static_folder="../frontend/dist", static_url_path="/")
 CORS(app)
 
-# SQLiteは絶対パスにしとくと迷子にならん
+# absolute path to avoid sqlite path issues in production
 DB_PATH = os.path.abspath("issues.db")
 app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{DB_PATH}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
-# ----- モデル定義（ここが先）-----
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, nullable=False)
@@ -47,11 +47,11 @@ class Issue(db.Model):
             "updated_at": self.updated_at.isoformat(),
         }
 
-# ----- ここで初期化（モデル定義の後）-----
 with app.app_context():
     db.create_all()
 
 def require_token(f):
+    # Simple decorator for token-based API protection (demo purpose)
     @wraps(f)
     def wrapper(*args, **kwargs):
         auth = request.headers.get("Authorization", "")
@@ -77,7 +77,6 @@ def login():
     if not user or not check_password_hash(user.password_hash, password):
         return {"error": "invalid credentials"}, 401
 
-    # ここはシンプルに固定トークンでOK（デモ用途）
     return {"token": "demo-token"}, 200
 
 @app.get("/api/issues")
@@ -91,7 +90,6 @@ def list_issues():
         q = q.filter(Issue.title.contains(kw))
     if st in ALLOWED_STATUS:
         q = q.filter(Issue.status == st)
-    # 不正な status は無視して全件にする（ここで return しない）
 
     items = q.order_by(Issue.created_at.desc()).all()
     return jsonify([i.to_dict() for i in items]), 200
@@ -109,7 +107,8 @@ def create_issue():
         status=status,
         priority=data.get("priority","medium"),
     )
-    if not i.title: return {"error":"title required"}, 400
+    if not i.title:
+        return {"error": "title required"}, 400
     db.session.add(i); db.session.commit()
     return i.to_dict(), 201
 
@@ -140,6 +139,7 @@ def delete_issue(iid):
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def spa(path):
+    # Serve React SPA (fallback to index.html for client-side routing)
     dist = app.static_folder
     file = os.path.join(dist, path)
     if path and os.path.exists(file):
